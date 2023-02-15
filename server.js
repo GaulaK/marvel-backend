@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 
 // routes
 app.use(require("./routes/characters"));
@@ -12,7 +14,7 @@ app.use(require("./routes/comics"));
 app.get("/", (req, res) => {
   res.json({
     message:
-      "Welcome on Marvel API. Author @GaulaK. See Documentation on GitHub : https://github.com/GaulaK/marvel-backend",
+      "Welcome on Marvel Server. Author @GaulaK. See Documentation on GitHub : https://github.com/GaulaK/marvel-backend",
   });
 });
 
