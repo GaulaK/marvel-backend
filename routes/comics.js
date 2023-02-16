@@ -9,12 +9,13 @@ const axios = require("axios");
 // TODO: Search Comics by name
 router.get("/comics", async (req, res) => {
   try {
+    const search = req.query?.search ? req.query.search : "";
     const page = parseInt(req.query?.page) ? parseInt(req.query.page) : 1;
 
     const response = await axios.get(
       `${process.env.MARVEL_API_URL}/comics?apiKey=${
         process.env.MARVEL_API_KEY
-      }&skip=${(page - 1) * 100}`
+      }&skip=${(page - 1) * 100}&name=${search}`
     );
     // console.log(response.data);
 

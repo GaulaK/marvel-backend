@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const axios = require("axios");
+const { query } = require("express");
 
 /**
  * Gives a list of 100 Marvel characters
@@ -9,12 +10,13 @@ const axios = require("axios");
 // TODO: Search Character by name
 router.get("/characters", async (req, res) => {
   try {
+    const search = req.query?.search ? req.query.search : "";
     const page = parseInt(req.query?.page) ? parseInt(req.query.page) : 1;
 
     const response = await axios.get(
       `${process.env.MARVEL_API_URL}/characters?apiKey=${
         process.env.MARVEL_API_KEY
-      }&skip=${(page - 1) * 100}`
+      }&skip=${(page - 1) * 100}&name=${search}`
     );
     // console.log(response.data);
 
@@ -33,7 +35,9 @@ router.get("/character/:characterId", async (req, res) => {
     const { characterId } = req.params;
     if (!characterId) {
       res.status(400).json({
-        error: { message: "Need a not undefined ID for the character" },
+        error: {
+          message: "Need a not undefined ID for the character",
+        },
       });
     } else {
       const response = await axios.get(
@@ -48,8 +52,13 @@ router.get("/character/:characterId", async (req, res) => {
       }
     }
   } catch (error) {
-    res.status(400).json({ error: { message: "Invalid Request Sent" } });
-    console.log(error);
+    res.status(400).json({
+      error: {
+        message: "Invalid Request Sent",
+        // response: error.response.data,
+      },
+    });
+    // console.log(error);
   }
 });
 
