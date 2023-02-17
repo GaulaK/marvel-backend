@@ -6,7 +6,7 @@ const axios = require("axios");
 /**
  * Gives a list of 100 Marvel comics
  */
-// TODO: Search Comics by name
+// TODO: Search Comics by title
 router.get("/comics", async (req, res) => {
   try {
     const search = req.query?.search ? req.query.search : "";
@@ -15,7 +15,7 @@ router.get("/comics", async (req, res) => {
     const response = await axios.get(
       `${process.env.MARVEL_API_URL}/comics?apiKey=${
         process.env.MARVEL_API_KEY
-      }&skip=${(page - 1) * 100}&name=${search}`
+      }&skip=${(page - 1) * 100}&title=${search}`
     );
     // console.log(response.data);
 

@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 const axios = require("axios");
-const { query } = require("express");
 
 /**
  * Gives a list of 100 Marvel characters
