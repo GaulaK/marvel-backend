@@ -81,8 +81,8 @@ router.post("/user/login", async (req, res) => {
         favorites: UserTryToConnect.favorites,
       });
     } else {
-      return res.json({
-        error: { message: "Connection Failed : Wrong email or password" },
+      return res.status(400).json({
+        error: { message: `Connection Failed : Wrong email or password` },
       });
     }
   } catch (error) {
