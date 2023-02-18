@@ -9,6 +9,7 @@ const uid2 = require("uid2");
 const User = require("../models/User");
 // Middlewares
 const isAuthenticated = require("../middlewares/isAuthenticated");
+const { default: axios } = require("axios");
 
 router.post("/user/signup", async (req, res) => {
   const { username, email, password } = req.body;
@@ -104,7 +105,7 @@ router.post("/user/favorites/add", isAuthenticated, async (req, res) => {
       //Verify if isnt already in favorite
       if (UserToModify.favorites[tabToModify].indexOf(value) === -1) {
         UserToModify.favorites[tabToModify].push(value);
-        UserToModify.save();
+        await UserToModify.save();
         return res.json(UserToModify);
       } else {
         res.status(400).json({ error: "This id was already in favorite" });
@@ -134,7 +135,7 @@ router.post("/user/favorites/remove", isAuthenticated, async (req, res) => {
           UserToModify.favorites[tabToModify].indexOf(value),
           1
         );
-        UserToModify.save();
+        await UserToModify.save();
         return res.json(UserToModify);
       } else {
         res.status(400).json({ error: "This id wasnt in favorites" });
@@ -144,6 +145,45 @@ router.post("/user/favorites/remove", isAuthenticated, async (req, res) => {
     }
   } else {
     return res.status(400).json({ error: "No data sent" });
+  }
+});
+
+router.get("/user/favorites/get", isAuthenticated, async (req, res) => {
+  //   console.log("user:", req.user);
+  const UserGetFavorites = req.user;
+
+  const favorites = { characters: [], comics: [] };
+
+  try {
+    for (
+      let index = 0;
+      index < UserGetFavorites.favorites["characters"].length;
+      index++
+    ) {
+      const id = UserGetFavorites.favorites["characters"][index];
+
+      const response = await axios.get(
+        `${process.env.MARVEL_API_URL}/character/${id}?apiKey=${process.env.MARVEL_API_KEY}`
+      );
+
+      favorites["characters"].push(response.data);
+    }
+    for (
+      let index = 0;
+      index < UserGetFavorites.favorites["comics"].length;
+      index++
+    ) {
+      const id = UserGetFavorites.favorites["comics"][index];
+      const response = await axios.get(
+        `${process.env.MARVEL_API_URL}/comic/${id}?apiKey=${process.env.MARVEL_API_KEY}`
+      );
+      favorites["comics"].push(response.data);
+    }
+    console.log(favorites);
+    res.json(favorites);
+  } catch (error) {
+    // console.log(error.response.data);
+    // console.log(error.message);
   }
 });
 
