@@ -91,7 +91,7 @@ router.post("/user/login", async (req, res) => {
 });
 
 router.post("/user/favorites/add", isAuthenticated, async (req, res) => {
-  console.log(req.user);
+  // console.log(req.user);
   const UserToModify = req.user;
   if (Object.keys(req.body)[0]) {
     const tabToModify = Object.keys(req.body)[0];
@@ -103,16 +103,13 @@ router.post("/user/favorites/add", isAuthenticated, async (req, res) => {
     }
     try {
       //Verify if isnt already in favorite
-      if (UserToModify.favorites[tabToModify].indexOf(value) === -1) {
-        UserToModify.favorites[tabToModify].push(value);
-        await UserToModify.save();
-        return res.json({
-          account: UserToModify.account,
-          favorites: UserToModify.favorites,
-        });
-      } else {
-        res.status(400).json({ error: "This id was already in favorite" });
-      }
+
+      UserToModify.favorites[tabToModify].push(value);
+      await UserToModify.save();
+      return res.json({
+        account: UserToModify.account,
+        favorites: UserToModify.favorites,
+      });
     } catch (error) {
       return res.status(400).json({ error: error });
     }
@@ -121,7 +118,7 @@ router.post("/user/favorites/add", isAuthenticated, async (req, res) => {
   }
 });
 router.post("/user/favorites/remove", isAuthenticated, async (req, res) => {
-  console.log("user:", req.user);
+  // console.log("user:", req.user);
   const UserToModify = req.user;
   if (Object.keys(req.body)[0]) {
     const tabToModify = Object.keys(req.body)[0];
@@ -133,20 +130,21 @@ router.post("/user/favorites/remove", isAuthenticated, async (req, res) => {
     }
     try {
       //Verify if is already in favorite
-      if (UserToModify.favorites[tabToModify].indexOf(value) !== -1) {
-        UserToModify.favorites[tabToModify].splice(
-          UserToModify.favorites[tabToModify].indexOf(value),
-          1
-        );
-        await UserToModify.save();
-        return res.json({
-          account: UserToModify.account,
-          favorites: UserToModify.favorites,
-        });
-      } else {
-        res.status(400).json({ error: "This id wasnt in favorites" });
-      }
+
+      const indexToDelete = UserToModify.favorites[tabToModify].indexOf(
+        UserToModify.favorites[tabToModify].find(
+          (element) => element._id === value._id
+        )
+      );
+
+      UserToModify.favorites[tabToModify].splice(indexToDelete, 1);
+      await UserToModify.save();
+      return res.json({
+        account: UserToModify.account,
+        favorites: UserToModify.favorites,
+      });
     } catch (error) {
+      console.log(error);
       return res.status(400).json({ error: error });
     }
   } else {
@@ -155,41 +153,15 @@ router.post("/user/favorites/remove", isAuthenticated, async (req, res) => {
 });
 
 router.get("/user/favorites/get", isAuthenticated, async (req, res) => {
-  //   console.log("user:", req.user);
-  const UserGetFavorites = req.user;
-
-  const favorites = { characters: [], comics: [] };
+  // console.log("user:", req.user);
 
   try {
-    for (
-      let index = 0;
-      index < UserGetFavorites.favorites["characters"].length;
-      index++
-    ) {
-      const id = UserGetFavorites.favorites["characters"][index];
-
-      const response = await axios.get(
-        `${process.env.MARVEL_API_URL}/character/${id}?apiKey=${process.env.MARVEL_API_KEY}`
-      );
-
-      favorites["characters"].push(response.data);
-    }
-    for (
-      let index = 0;
-      index < UserGetFavorites.favorites["comics"].length;
-      index++
-    ) {
-      const id = UserGetFavorites.favorites["comics"][index];
-      const response = await axios.get(
-        `${process.env.MARVEL_API_URL}/comic/${id}?apiKey=${process.env.MARVEL_API_KEY}`
-      );
-      favorites["comics"].push(response.data);
-    }
-    console.log(favorites);
-    res.json(favorites);
+    const UserGetFavorites = req.user;
+    console.log(UserGetFavorites);
+    res.json(UserGetFavorites.favorites);
   } catch (error) {
-    // console.log(error.response.data);
-    // console.log(error.message);
+    console.log(error.response.data);
+    console.log(error.message);
   }
 });
 
