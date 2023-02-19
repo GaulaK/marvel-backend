@@ -6,9 +6,10 @@ const axios = require("axios");
 /**
  * Gives a list of 100 Marvel comics
  */
-// TODO: Search Comics by title
+
 router.get("/comics", async (req, res) => {
   try {
+    // set search value, default value is empty string (same as no filter)
     const search = req.query?.search ? req.query.search : "";
     const page = parseInt(req.query?.page) ? parseInt(req.query.page) : 1;
 
@@ -17,12 +18,10 @@ router.get("/comics", async (req, res) => {
         process.env.MARVEL_API_KEY
       }&skip=${(page - 1) * 100}&title=${search}`
     );
-    // console.log(response.data);
 
     res.json({ data: response.data });
   } catch (error) {
     res.status(400).json({ error: { message: error.message } });
-    console.log(error);
   }
 });
 
@@ -52,7 +51,6 @@ router.get("/comics/:characterId", async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ error: { message: "Invalid Request Sent" } });
-    console.log(error);
   }
 });
 

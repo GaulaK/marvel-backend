@@ -4,11 +4,11 @@ const router = express.Router();
 const axios = require("axios");
 
 /**
- * Gives a list of 100 Marvel characters
+ * Gives all informations about 100 chracters (100 is one page)
  */
-// TODO: Search Character by name
 router.get("/characters", async (req, res) => {
   try {
+    // set search value, default value is empty string (same as no filter)
     const search = req.query?.search ? req.query.search : "";
     const page = parseInt(req.query?.page) ? parseInt(req.query.page) : 1;
 
@@ -17,12 +17,9 @@ router.get("/characters", async (req, res) => {
         process.env.MARVEL_API_KEY
       }&skip=${(page - 1) * 100}&name=${search}`
     );
-    // console.log(response.data);
-
     res.json({ data: response.data });
   } catch (error) {
     res.status(400).json({ error: { message: error.message } });
-    console.log(error);
   }
 });
 
@@ -54,10 +51,8 @@ router.get("/character/:characterId", async (req, res) => {
     res.status(400).json({
       error: {
         message: "Invalid Request Sent",
-        // response: error.response.data,
       },
     });
-    // console.log(error);
   }
 });
 

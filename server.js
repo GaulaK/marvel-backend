@@ -4,9 +4,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+// Mongoose settings
 mongoose.set("strictQuery", false);
 mongoose.connect(process.env.MONGODB_URI);
 
+// Express settings
 const app = express();
 app.use(cors());
 app.use(express.json());
