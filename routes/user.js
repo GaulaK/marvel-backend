@@ -106,7 +106,10 @@ router.post("/user/favorites/add", isAuthenticated, async (req, res) => {
       if (UserToModify.favorites[tabToModify].indexOf(value) === -1) {
         UserToModify.favorites[tabToModify].push(value);
         await UserToModify.save();
-        return res.json(UserToModify);
+        return res.json({
+          account: UserToModify.account,
+          favorites: UserToModify.favorites,
+        });
       } else {
         res.status(400).json({ error: "This id was already in favorite" });
       }
@@ -136,7 +139,10 @@ router.post("/user/favorites/remove", isAuthenticated, async (req, res) => {
           1
         );
         await UserToModify.save();
-        return res.json(UserToModify);
+        return res.json({
+          account: UserToModify.account,
+          favorites: UserToModify.favorites,
+        });
       } else {
         res.status(400).json({ error: "This id wasnt in favorites" });
       }
